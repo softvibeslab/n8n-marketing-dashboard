@@ -6,9 +6,8 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json ./
-RUN npm ci --only=production && npm cache clean --force
-
+COPY package.json ./  
+RUN npm install --only=production && npm cache clean --force  
 # ===================================
 # Stage 2: Builder
 # ===================================
