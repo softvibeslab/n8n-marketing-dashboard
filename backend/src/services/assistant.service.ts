@@ -420,6 +420,9 @@ Available actions:
    * Handle execute workflow action
    */
   private async handleExecuteWorkflowAction(userId: string, action: any) {
+    if (!action.workflowId) {
+      throw new Error('workflowId is required for execute workflow action');
+    }
     const execution = await workflowService.executeWorkflow(action.workflowId, userId, {});
 
     return {
@@ -433,6 +436,9 @@ Available actions:
    * Handle get analytics action
    */
   private async handleGetAnalyticsAction(userId: string, action: any) {
+    if (!action.campaignId) {
+      throw new Error('campaignId is required for get analytics action');
+    }
     const metrics = await analyticsService.getCampaignMetrics(
       action.campaignId,
       { period: '30d' },

@@ -93,7 +93,7 @@ router.get(
     const userId = req.user!.id;
     const { campaignId, type, status, page, pageSize } = req.query;
 
-    const assets = await assetService.listAssets(userId, campaignId as string, {
+    const assets = await assetService.listAssets(userId, (campaignId as string) || '', {
       type: type as string | undefined,
       status: status as string | undefined,
       page: page ? parseInt(page as string) : undefined,

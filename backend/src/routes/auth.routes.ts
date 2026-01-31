@@ -87,7 +87,7 @@ router.post(
  * POST /api/v1/auth/logout
  * User logout (client-side token deletion)
  */
-router.post('/logout', (req, res) => {
+router.post('/logout', (_req, res) => {
   // Token deletion is handled on the client side
   // In a production app, you might want to implement token blacklisting
   res.status(200).json({

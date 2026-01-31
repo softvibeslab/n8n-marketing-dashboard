@@ -12,7 +12,7 @@ const router = Router();
  * POST /api/v1/campaigns
  * Create campaign
  */
-router.post('/', (req, res) => {
+router.post('/', (_req, res) => {
   res.status(501).json({
     success: false,
     error: {
@@ -26,7 +26,7 @@ router.post('/', (req, res) => {
  * GET /api/v1/campaigns
  * List campaigns
  */
-router.get('/', (req, res) => {
+router.get('/', (_req, res) => {
   res.status(501).json({
     success: false,
     error: {
@@ -40,7 +40,7 @@ router.get('/', (req, res) => {
  * GET /api/v1/campaigns/:id
  * Get campaign details
  */
-router.get('/:id', (req, res) => {
+router.get('/:id', (_req, res) => {
   res.status(501).json({
     success: false,
     error: {
@@ -54,7 +54,7 @@ router.get('/:id', (req, res) => {
  * PUT /api/v1/campaigns/:id
  * Update campaign
  */
-router.put('/:id', (req, res) => {
+router.put('/:id', (_req, res) => {
   res.status(501).json({
     success: false,
     error: {
@@ -68,7 +68,7 @@ router.put('/:id', (req, res) => {
  * DELETE /api/v1/campaigns/:id
  * Delete campaign
  */
-router.delete('/:id', (req, res) => {
+router.delete('/:id', (_req, res) => {
   res.status(501).json({
     success: false,
     error: {
@@ -82,7 +82,7 @@ router.delete('/:id', (req, res) => {
  * POST /api/v1/campaigns/:id/execute
  * Execute campaign workflow
  */
-router.post('/:id/execute', (req, res) => {
+router.post('/:id/execute', (_req, res) => {
   res.status(501).json({
     success: false,
     error: {

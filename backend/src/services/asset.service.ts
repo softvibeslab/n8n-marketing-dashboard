@@ -103,7 +103,7 @@ class AssetService {
       quality: imageRequest.quality || 'standard',
     });
 
-    const images = response.data.map((img: any) => ({
+    const images = (response.data || []).map((img: any) => ({
       url: img.url,
       revisedPrompt: img.revised_prompt,
     }));
@@ -399,7 +399,7 @@ class AssetService {
   /**
    * Get asset templates
    */
-  async getTemplates(category?: string, assetType?: string) {
+  async getTemplates(category?: string, _assetType?: string) {
     try {
       const where: any = {
         isActive: true,
@@ -409,7 +409,7 @@ class AssetService {
         where.category = category;
       }
 
-      const templates = await prisma.strategyTemplate.findMany({
+      const templates = await prisma.assetTemplate.findMany({
         where,
         orderBy: {
           name: 'asc',

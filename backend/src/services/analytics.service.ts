@@ -192,6 +192,7 @@ Respond in JSON format with insights, recommendations, and priority levels.`,
         insights = await this.generateAIInsights(campaignId, {
           metrics,
           goals: [], // Would be populated from campaign goals
+          campaignId,
         }, userId);
       }
 

@@ -12,7 +12,7 @@ const router = Router();
  * GET /api/v1/n8n/status
  * Check n8n connection status
  */
-router.get('/status', (req, res) => {
+router.get('/status', (_req, res) => {
   res.status(501).json({
     success: false,
     error: {
@@ -26,7 +26,7 @@ router.get('/status', (req, res) => {
  * POST /api/v1/n8n/webhook
  * Receive n8n execution webhooks
  */
-router.post('/webhook', (req, res) => {
+router.post('/webhook', (_req, res) => {
   res.status(501).json({
     success: false,
     error: {
@@ -40,7 +40,7 @@ router.post('/webhook', (req, res) => {
  * GET /api/v1/n8n/executions/:id
  * Get execution details
  */
-router.get('/executions/:id', (req, res) => {
+router.get('/executions/:id', (_req, res) => {
   res.status(501).json({
     success: false,
     error: {

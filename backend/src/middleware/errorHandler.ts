@@ -92,4 +92,4 @@ export function createError(
 
 import { config } from '../config';
 
-const { env } = config;
+const { env: _env } = config;

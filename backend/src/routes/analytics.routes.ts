@@ -41,7 +41,7 @@ router.get(
     const metrics = await analyticsService.getCampaignMetrics(
       campaignId,
       {
-        period: (period as string) || '30d',
+        period: (period as '7d' | '30d' | '90d' | 'custom') || '30d',
         breakdown: breakdown as any,
       },
       userId

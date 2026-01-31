@@ -341,7 +341,7 @@ class StrategyService {
               'Social Media Ads': 5000,
               'Google Shopping': 4000,
               'Influencer Marketing': 3000,
-            },
+            } as Record<string, number>,
           },
         },
         {
@@ -377,7 +377,7 @@ class StrategyService {
               'Social Media Ads': 6000,
               'Content Marketing': 4000,
               'PR & Media': 3000,
-            },
+            } as Record<string, number>,
           },
         },
         {
@@ -414,7 +414,7 @@ class StrategyService {
               'Email Marketing': 2000,
               'Content Marketing': 4000,
               'Webinars': 3000,
-            },
+            } as Record<string, number>,
           },
         },
       ];

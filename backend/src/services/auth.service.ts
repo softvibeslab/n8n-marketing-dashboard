@@ -137,12 +137,12 @@ export function verifyToken(token: string): {
 function generateTokens(userId: string, email: string, role: string) {
   const payload = { id: userId, email, role };
 
-  const accessToken = jwt.sign(payload, config.jwt.secret, {
-    expiresIn: config.jwt.accessExpiration,
+  const accessToken = jwt.sign(payload, config.jwt.secret as string, {
+    expiresIn: config.jwt.accessExpiration as string,
   });
 
-  const refreshToken = jwt.sign(payload, config.jwt.secret, {
-    expiresIn: config.jwt.refreshExpiration,
+  const refreshToken = jwt.sign(payload, config.jwt.secret as string, {
+    expiresIn: config.jwt.refreshExpiration as string,
   });
 
   return { accessToken, refreshToken };
@@ -151,14 +151,14 @@ function generateTokens(userId: string, email: string, role: string) {
 /**
  * Refresh access token
  */
-export function refreshToken(refreshToken: string): string {
-  const decoded = verifyToken(refreshToken);
+export function refreshToken(refreshTokenParam: string): string {
+  const decoded = verifyToken(refreshTokenParam);
 
   const accessToken = jwt.sign(
     { id: decoded.id, email: decoded.email, role: decoded.role },
-    config.jwt.secret,
+    config.jwt.secret as string,
     {
-      expiresIn: config.jwt.accessExpiration,
+      expiresIn: config.jwt.accessExpiration as string,
     }
   );
 
