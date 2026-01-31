@@ -22,14 +22,14 @@ class AssetService {
   /**
    * Generate asset using AI
    */
-  async generateAsset(campaignId: string, request: AssetGenerationRequest) {
+  async generateAsset(campaignId: string, userId: string, request: AssetGenerationRequest) {
     try {
       logger.info('Generating asset', { campaignId, type: request.type });
 
       if (request.type === 'TEXT') {
-        return this.generateTextAsset(campaignId, request);
+        return this.generateTextAsset(campaignId, userId, request);
       } else if (request.type === 'IMAGE') {
-        return this.generateImageAsset(campaignId, request);
+        return this.generateImageAsset(campaignId, userId, request);
       }
 
       throw new Error('Unsupported asset type');
@@ -42,7 +42,7 @@ class AssetService {
   /**
    * Generate text asset
    */
-  private async generateTextAsset(campaignId: string, request: AssetGenerationRequest) {
+  private async generateTextAsset(campaignId: string, userId: string, request: AssetGenerationRequest) {
     const textRequest = request as any; // TextAssetGeneration
 
     // Build prompt for OpenAI
@@ -70,6 +70,7 @@ class AssetService {
     const asset = await prisma.asset.create({
       data: {
         campaignId,
+        userId,
         type: 'TEXT',
         content,
         metadata: {
@@ -90,7 +91,7 @@ class AssetService {
   /**
    * Generate image asset
    */
-  private async generateImageAsset(campaignId: string, request: AssetGenerationRequest) {
+  private async generateImageAsset(campaignId: string, userId: string, request: AssetGenerationRequest) {
     const imageRequest = request as any; // ImageAssetGeneration
 
     // Use DALL-E via OpenAI
@@ -113,6 +114,7 @@ class AssetService {
         prisma.asset.create({
           data: {
             campaignId,
+            userId,
             type: 'IMAGE',
             fileUrl: img.url,
             metadata: {
@@ -135,12 +137,12 @@ class AssetService {
   /**
    * Batch generate assets
    */
-  async batchGenerateAssets(request: BatchAssetGeneration) {
+  async batchGenerateAssets(userId: string, request: BatchAssetGeneration) {
     try {
       logger.info('Batch generating assets', { campaignId: request.campaignId, count: request.assets.length });
 
       const results = await Promise.all(
-        request.assets.map((assetRequest) => this.generateAsset(request.campaignId, assetRequest))
+        request.assets.map((assetRequest) => this.generateAsset(request.campaignId, userId, assetRequest))
       );
 
       logger.info('Batch asset generation complete', { count: results.length });
@@ -180,6 +182,7 @@ class AssetService {
           metadata: request.metadata as any,
           isAIGenerated: request.isAIGenerated,
           status: 'DRAFT',
+          userId,
         },
       });
 

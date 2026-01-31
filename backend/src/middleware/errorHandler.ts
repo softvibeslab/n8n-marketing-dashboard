@@ -21,7 +21,7 @@ export function errorHandler(
   err: AppError,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void {
   // Log error
   logger.error('Error occurred:', {
@@ -91,3 +91,5 @@ export function createError(
 }
 
 import { config } from '../config';
+
+const { env } = config;

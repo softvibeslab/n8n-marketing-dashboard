@@ -67,7 +67,7 @@ describe('AssetService', () => {
         maxLength: 500,
       };
 
-      const result = await assetService.generateAsset('campaign-123', request);
+      const result = await assetService.generateAsset('campaign-123', 'user-123', request);
 
       expect(result).toHaveProperty('id');
       expect(result.type).toBe('TEXT');
@@ -103,7 +103,7 @@ describe('AssetService', () => {
         quality: 'standard',
       };
 
-      const result = await assetService.generateAsset('campaign-123', request);
+      const result = await assetService.generateAsset('campaign-123', 'user-123', request);
 
       expect(result).toHaveProperty('id');
       expect(result.type).toBe('IMAGE');

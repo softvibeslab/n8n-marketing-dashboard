@@ -379,7 +379,7 @@ Respond in JSON format with insights, recommendations, and priority levels.`,
 
     if (request.goals && request.goals.length > 0) {
       prompt += `\n\nGoals:\n`;
-      request.goals.forEach((goal, index) => {
+      request.goals.forEach((goal: { metric: string; target: number; current: number }, index: number) => {
         const progress = (goal.current / goal.target) * 100;
         prompt += `${index + 1}. ${goal.metric}: ${progress.toFixed(1)}% of target (${goal.current}/${goal.target})\n`;
       });

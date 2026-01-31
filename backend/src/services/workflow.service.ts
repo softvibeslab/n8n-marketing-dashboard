@@ -497,7 +497,7 @@ class WorkflowService {
         await tx.workflow.update({
           where: { id: workflowId },
           data: {
-            n8nWorkflowJson: version.n8nWorkflowJson,
+            n8nWorkflowJson: version.n8nWorkflowJson as any,
             version: newVersion,
           },
         });
@@ -506,7 +506,7 @@ class WorkflowService {
           data: {
             workflowId,
             version: newVersion,
-            n8nWorkflowJson: version.n8nWorkflowJson,
+            n8nWorkflowJson: version.n8nWorkflowJson as any,
             changeLog: `Restored from version ${versionNumber}`,
             createdBy: userId,
           },

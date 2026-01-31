@@ -9,7 +9,6 @@ import { analyticsService } from '../services/analytics.service';
 import { validateRequest } from '../middleware/validateRequest';
 import { asyncHandler } from '../utils/asyncHandler';
 import {
-  campaignMetricsSchema,
   platformAnalyticsSchema,
   reportGenerationSchema,
   aiInsightsRequestSchema,

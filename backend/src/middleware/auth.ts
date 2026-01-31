@@ -27,7 +27,7 @@ declare global {
 /**
  * Verify JWT token and attach user to request
  */
-export function authMiddleware(req: Request, res: Response, next: NextFunction): void {
+export function authMiddleware(req: Request, _res: Response, next: NextFunction): void {
   try {
     const authHeader = req.headers.authorization;
 
@@ -66,7 +66,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
  * Check if user has required role
  */
 export function requireRole(...roles: string[]) {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.user) {
       return next(createError(401, 'Authentication required', 'AUTH_REQUIRED'));
     }
@@ -88,7 +88,7 @@ export function requireRole(...roles: string[]) {
 /**
  * Optional authentication - doesn't fail if no token
  */
-export function optionalAuth(req: Request, res: Response, next: NextFunction): void {
+export function optionalAuth(req: Request, _res: Response, next: NextFunction): void {
   try {
     const authHeader = req.headers.authorization;
 

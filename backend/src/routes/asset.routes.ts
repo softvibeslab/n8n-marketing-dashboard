@@ -36,8 +36,9 @@ router.post(
   '/generate',
   validateRequest({ body: assetGenerationRequestSchema }),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
+    const userId = req.user!.id;
     const campaignId = req.body.campaignId || (req.query.campaignId as string);
-    const asset = await assetService.generateAsset(campaignId, req.body);
+    const asset = await assetService.generateAsset(campaignId, userId, req.body);
 
     res.status(201).json({
       success: true,
@@ -54,7 +55,8 @@ router.post(
   '/batch',
   validateRequest({ body: batchAssetGenerationSchema }),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
-    const results = await assetService.batchGenerateAssets(req.body);
+    const userId = req.user!.id;
+    const results = await assetService.batchGenerateAssets(userId, req.body);
 
     res.status(201).json({
       success: true,

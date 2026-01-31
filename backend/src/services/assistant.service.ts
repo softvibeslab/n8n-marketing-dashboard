@@ -90,14 +90,7 @@ class AssistantService {
         },
       });
 
-      // Update title if it's the first exchange
-      if (messages.length === 2 && !updated.title) {
-        const title = this.generateConversationTitle(request.message);
-        await prisma.conversation.update({
-          where: { id: conversation.id },
-          data: { title },
-        });
-      }
+      // Note: Conversation title generation disabled - title property not in schema
 
       logger.info('Assistant message processed', { conversationId: conversation.id });
 

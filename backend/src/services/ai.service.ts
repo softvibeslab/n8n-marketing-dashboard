@@ -45,7 +45,7 @@ class AIService {
   /**
    * Get AI client (OpenAI or Groq)
    */
-  private getClient(): OpenAI {
+  protected getClient(): OpenAI {
     return this.openai || this.groq || new OpenAI();
   }
 

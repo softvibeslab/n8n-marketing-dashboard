@@ -7,7 +7,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { config } from '../config';
 import { logger } from '../utils/logger';
-import { N8nWorkflow, WorkflowValidationResponse } from '../schemas';
+import { N8nWorkflow, WorkflowValidationResponse, N8nNode, N8nConnection } from '../schemas';
 
 /**
  * n8n Service for workflow integration
@@ -255,7 +255,7 @@ class N8nService {
     }
 
     // Validate nodes
-    workflow.nodes?.forEach((node) => {
+    workflow.nodes?.forEach((node: N8nNode) => {
       const nodeErrors: string[] = [];
 
       if (!node.id) {
@@ -286,12 +286,13 @@ class N8nService {
     // Validate connections
     if (workflow.connections) {
       Object.entries(workflow.connections).forEach(([fromNodeId, connections]) => {
-        (connections as any).forEach((connectionGroup: any) => {
-          connectionGroup.forEach((connection: any) => {
+        const connectionGroups = connections as N8nConnection[][];
+        connectionGroups.forEach((connectionGroup) => {
+          connectionGroup.forEach((connection: N8nConnection) => {
             const connectionErrors: string[] = [];
 
-            const fromNode = workflow.nodes?.find((n) => n.id === fromNodeId);
-            const toNode = workflow.nodes?.find((n) => n.id === connection.node);
+            const fromNode = workflow.nodes?.find((n: N8nNode) => n.id === fromNodeId);
+            const toNode = workflow.nodes?.find((n: N8nNode) => n.id === connection.node);
 
             if (!fromNode) {
               connectionErrors.push(`Source node ${fromNodeId} not found`);
@@ -314,15 +315,15 @@ class N8nService {
 
     // Check for orphan nodes (no connections)
     const connectedNodeIds = new Set<string>();
-    Object.values(workflow.connections || {}).forEach((conns: any) => {
-      conns.forEach((group: any) => {
-        group.forEach((conn: any) => {
+    Object.values(workflow.connections || {}).forEach((conns: N8nConnection[][]) => {
+      conns.forEach((group: N8nConnection[]) => {
+        group.forEach((conn: N8nConnection) => {
           connectedNodeIds.add(conn.node);
         });
       });
     });
 
-    workflow.nodes?.forEach((node) => {
+    workflow.nodes?.forEach((node: N8nNode) => {
       if (!connectedNodeIds.has(node.id) && workflow.connections![node.id] === undefined) {
         warnings.push(`Node "${node.name}" (${node.id}) is not connected`);
       }
