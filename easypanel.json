@@ -1,0 +1,257 @@
+{
+  "name": "n8n-marketing-dashboard",
+  "version": "1.0.0",
+  "description": "AI-powered marketing dashboard with n8n workflow automation",
+  "services": [
+    {
+      "id": "backend",
+      "name": "Backend API",
+      "type": "docker",
+      "image": "n8n-marketing-dashboard-backend:latest",
+      "ports": [
+        {
+          "container": 3001,
+          "protocol": "tcp"
+        },
+        {
+          "container": 3002,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "key": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "key": "PORT",
+          "value": "3001"
+        },
+        {
+          "key": "DATABASE_URL",
+          "value": "{{postgres.DATABASE_URL}}"
+        },
+        {
+          "key": "REDIS_URL",
+          "value": "{{redis.REDIS_URL}}"
+        },
+        {
+          "key": "JWT_SECRET",
+          "value": "{{JWT_SECRET}}",
+          "secret": true
+        },
+        {
+          "key": "N8N_API_KEY",
+          "value": "{{N8N_API_KEY}}",
+          "secret": true
+        },
+        {
+          "key": "OPENAI_API_KEY",
+          "value": "{{OPENAI_API_KEY}}",
+          "secret": true
+        },
+        {
+          "key": "ENCRYPTION_KEY",
+          "value": "{{ENCRYPTION_KEY}}",
+          "secret": true
+        },
+        {
+          "key": "CORS_ORIGIN",
+          "value": "{{CORS_ORIGIN}}"
+        }
+      ],
+      "volumes": [
+        {
+          "mount": "/app/logs",
+          "type": "data",
+          "name": "backend-logs"
+        }
+      ],
+      "healthCheck": {
+        "path": "/health",
+        "interval": 30000,
+        "timeout": 10000,
+        "retries": 3,
+        "startPeriod": 40000
+      },
+      "restart": "unless-stopped",
+      "deploy": {
+        "resources": {
+          "memory": "2048Mi",
+          "cpu": "1000m"
+        }
+      }
+    },
+    {
+      "id": "frontend",
+      "name": "Frontend",
+      "type": "docker",
+      "image": "n8n-marketing-dashboard-frontend:latest",
+      "ports": [
+        {
+          "container": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "key": "VITE_API_URL",
+          "value": "{{backend.API_URL}}"
+        },
+        {
+          "key": "VITE_WS_URL",
+          "value": "{{backend.WS_URL}}"
+        }
+      ],
+      "healthCheck": {
+        "path": "/health",
+        "interval": 30000,
+        "timeout": 10000,
+        "retries": 3,
+        "startPeriod": 10000
+      },
+      "restart": "unless-stopped",
+      "deploy": {
+        "resources": {
+          "memory": "512Mi",
+          "cpu": "500m"
+        }
+      }
+    },
+    {
+      "id": "postgres",
+      "name": "PostgreSQL Database",
+      "type": "postgres",
+      "image": "postgres:16-alpine",
+      "ports": [
+        {
+          "container": 5432,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "key": "POSTGRES_USER",
+          "value": "{{POSTGRES_USER}}"
+        },
+        {
+          "key": "POSTGRES_PASSWORD",
+          "value": "{{POSTGRES_PASSWORD}}",
+          "secret": true
+        },
+        {
+          "key": "POSTGRES_DB",
+          "value": "{{POSTGRES_DB}}"
+        }
+      ],
+      "volumes": [
+        {
+          "mount": "/var/lib/postgresql/data",
+          "type": "data",
+          "name": "postgres-data"
+        }
+      ],
+      "healthCheck": {
+        "test": "pg_isready -U $${POSTGRES_USER}",
+        "interval": 10000,
+        "timeout": 5000,
+        "retries": 5
+      },
+      "restart": "unless-stopped",
+      "deploy": {
+        "resources": {
+          "memory": "1024Mi",
+          "cpu": "500m"
+        }
+      }
+    },
+    {
+      "id": "redis",
+      "name": "Redis Cache",
+      "type": "redis",
+      "image": "redis:7-alpine",
+      "ports": [
+        {
+          "container": 6379,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "key": "REDIS_PASSWORD",
+          "value": "{{REDIS_PASSWORD}}",
+          "secret": true
+        }
+      ],
+      "command": "redis-server --requirepass $${REDIS_PASSWORD}",
+      "volumes": [
+        {
+          "mount": "/data",
+          "type": "data",
+          "name": "redis-data"
+        }
+      ],
+      "restart": "unless-stopped",
+      "deploy": {
+        "resources": {
+          "memory": "256Mi",
+          "cpu": "250m"
+        }
+      }
+    },
+    {
+      "id": "n8n",
+      "name": "n8n Workflow Automation",
+      "type": "docker",
+      "image": "n8nio/n8n:latest",
+      "ports": [
+        {
+          "container": 5678,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "key": "N8N_BASIC_AUTH_ACTIVE",
+          "value": "true"
+        },
+        {
+          "key": "N8N_BASIC_AUTH_USER",
+          "value": "{{N8N_USER}}"
+        },
+        {
+          "key": "N8N_BASIC_AUTH_PASSWORD",
+          "value": "{{N8N_PASSWORD}}",
+          "secret": true
+        },
+        {
+          "key": "N8N_HOST",
+          "value": "{{N8N_HOST}}"
+        },
+        {
+          "key": "WEBHOOK_URL",
+          "value": "{{N8N_WEBHOOK_URL}}"
+        },
+        {
+          "key": "N8N_ENCRYPTION_KEY",
+          "value": "{{N8N_ENCRYPTION_KEY}}",
+          "secret": true
+        }
+      ],
+      "volumes": [
+        {
+          "mount": "/home/node/.n8n",
+          "type": "data",
+          "name": "n8n-data"
+        }
+      ],
+      "restart": "unless-stopped",
+      "deploy": {
+        "resources": {
+          "memory": "2048Mi",
+          "cpu": "1000m"
+        }
+      }
+    }
+  ]
+}

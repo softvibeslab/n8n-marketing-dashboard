@@ -1,0 +1,10 @@
+{
+  "user_name": "RogerGV",
+  "conversation_language": "en",
+  "conversation_language_name": "English",
+  "is_korean": false,
+  "has_personalization": true,
+  "config_source": "fallback",
+  "personalized_greeting": "RogerGV",
+  "needs_setup": false
+}

@@ -1,0 +1,260 @@
+// ===========================================
+// n8n Marketing Dashboard - Database Schema
+// ===========================================
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===========================================
+// User Management
+// ===========================================
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         UserRole @default(USER)
+  apiKeys      Json?    @map("api_keys") // Encrypted API keys for external services
+  preferences  Json?    @default("{}")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  workflows   Workflow[]
+  campaigns   Campaign[]
+  assets      Asset[]
+  conversations Conversation[]
+  executions  Execution[]
+
+  @@index([email])
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  VIEWER
+}
+
+// ===========================================
+// Workflow Management
+// ===========================================
+
+model Workflow {
+  id               String           @id @default(uuid())
+  userId           String           @map("user_id")
+  name             String
+  description      String?          @db.Text
+  n8nWorkflowJson  Json             @map("n8n_workflow_json")
+  n8nWorkflowId    String?          @unique @map("n8n_workflow_id") // ID in n8n instance
+  version          Int              @default(1)
+  status           WorkflowStatus   @default(DRAFT)
+  isDeployed       Boolean          @default(false) @map("is_deployed")
+  lastExecutedAt   DateTime?        @map("last_executed_at")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaigns       Campaign[]
+  executions      Execution[]
+  versions        WorkflowVersion[]
+
+  @@index([userId, status])
+  @@index([n8nWorkflowId])
+  @@map("workflows")
+}
+
+enum WorkflowStatus {
+  DRAFT
+  DEPLOYED
+  ARCHIVED
+}
+
+model WorkflowVersion {
+  id              String   @id @default(uuid())
+  workflowId      String   @map("workflow_id")
+  version         Int
+  n8nWorkflowJson Json     @map("n8n_workflow_json")
+  changeLog       String?  @map("change_log")
+  createdAt       DateTime @default(now()) @map("created_at")
+  createdBy       String   @map("created_by") // User ID
+
+  // Relations
+  workflow        Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@unique([workflowId, version])
+  @@index([workflowId])
+  @@map("workflow_versions")
+}
+
+// ===========================================
+// Campaign Management
+// ===========================================
+
+model Campaign {
+  id          String         @id @default(uuid())
+  userId      String         @map("user_id")
+  workflowId  String?        @map("workflow_id")
+  name        String
+  description String?        @db.Text
+  strategy    Json           // Target audience, goals, channels, budget
+  status      CampaignStatus @default(ACTIVE)
+  metrics     Json?          @default("{}") // Performance metrics
+  startDate   DateTime?      @map("start_date")
+  endDate     DateTime?      @map("end_date")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflow    Workflow? @relation(fields: [workflowId], references: [id], onDelete: SetNull)
+  assets      Asset[]
+
+  @@index([userId, status])
+  @@index([startDate, endDate])
+  @@map("campaigns")
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+// ===========================================
+// Asset Management
+// ===========================================
+
+model Asset {
+  id          String      @id @default(uuid())
+  campaignId  String      @map("campaign_id")
+  type        AssetType
+  content     String?     @db.Text // Text content
+  fileUrl     String?     @map("file_url") // For images, videos
+  metadata    Json?       @default("{}") // Dimensions, format, etc.
+  isAIGenerated Boolean   @default(false) @map("is_ai_generated")
+  status      AssetStatus @default(DRAFT)
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  campaign    Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId, type])
+  @@index([createdAt])
+  @@map("assets")
+}
+
+enum AssetType {
+  TEXT
+  IMAGE
+  VIDEO
+  DESIGN
+}
+
+enum AssetStatus {
+  DRAFT
+  GENERATED
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+// ===========================================
+// Workflow Execution Tracking
+// ===========================================
+
+model Execution {
+  id          String        @id @default(uuid())
+  workflowId  String        @map("workflow_id")
+  userId      String        @map("user_id")
+  status      ExecutionStatus @default(RUNNING)
+  startedAt   DateTime      @default(now()) @map("started_at")
+  completedAt DateTime?     @map("completed_at")
+  logs        Json?         @default("{}") // Node-by-node execution details
+  errorMessage String?      @map("error_message")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  workflow    Workflow      @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId, status])
+  @@index([userId])
+  @@index([startedAt])
+  @@map("executions")
+}
+
+enum ExecutionStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
+// ===========================================
+// AI Assistant Conversations
+// ===========================================
+
+model Conversation {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  messages    Json     // Array of message objects
+  context     Json?    @default("{}") // Conversation context for AI
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@map("conversations")
+}
+
+// ===========================================
+// Strategy Templates
+// ===========================================
+
+model StrategyTemplate {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  @db.Text
+  category    String   // "E-commerce Launch", "Brand Awareness", etc.
+  template    Json     // Template configuration
+  isSystem    Boolean  @default(true) @map("is_system") // System templates vs user-created
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([category, isActive])
+  @@map("strategy_templates")
+}
+
+// ===========================================
+// Analytics Cache
+// ===========================================
+
+model AnalyticsCache {
+  id          String   @id @default(uuid())
+  campaignId  String   @map("campaign_id")
+  source      String   // "google_analytics", "instagram", etc.
+  metrics     Json     // Cached metrics data
+  fetchedAt   DateTime @default(now()) @map("fetched_at")
+  expiresAt   DateTime @map("expires_at")
+
+  @@unique([campaignId, source])
+  @@index([expiresAt])
+  @@map("analytics_cache")
+}
