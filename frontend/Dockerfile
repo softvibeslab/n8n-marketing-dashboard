@@ -5,9 +5,9 @@ FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files  
-COPY package.json ./   
-RUN npm install --only=production && npm cache clean --force                                                                        
+# Copy package files
+COPY package.json ./
+RUN npm install && npm cache clean --force                                                                        
 # ===================================
 # Stage 2: Builder
 # ===================================
