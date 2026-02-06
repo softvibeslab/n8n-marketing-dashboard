@@ -3,285 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N8N Marketing Dashboard</title>
+    <title>N8N Marketing Dashboard - SoftvibesLab</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        .header {
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-        }
-        .header h1 {
-            color: #667eea;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        .header p {
-            color: #666;
-            font-size: 1.1rem;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .card {
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .card h2 {
-            color: #764ba2;
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-        }
-        .stat-value {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #667eea;
-            margin: 10px 0;
-        }
-        .stat-label {
-            color: #666;
-            font-size: 1.1rem;
-        }
-        .status {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin: 5px;
-        }
-        .status-active {
-            background: #4ecdc4;
-            color: white;
-        }
-        .status-inactive {
-            background: #ff6b6b;
-            color: white;
-        }
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-        }
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-        .workflow-list {
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        }
-        .workflow-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .workflow-name {
-            font-weight: bold;
-            color: #333;
-        }
-        .workflow-actions button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); }
+        .header h1 { color: #667eea; font-size: 2.5rem; margin-bottom: 10px; }
+        .header p { color: #666; font-size: 1.1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { color: #764ba2; font-size: 1.8rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .stat-value { font-size: 3rem; font-weight: bold; color: #667eea; margin: 10px 0; }
+        .stat-label { color: #666; font-size: 1.1rem; }
+        .btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; width: 100%; text-align: center; text-decoration: none; display: block; }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4); }
+        .workflow-list { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); }
+        .workflow-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; }
+        .workflow-name { font-weight: bold; color: #333; }
+        .workflow-actions button { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px; }
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; }
+        .status-active { background: #4ecdc4; color: white; }
+        .status-inactive { background: #ff6b6b; color: white; }
+        .loading { text-align: center; padding: 40px; color: #666; font-size: 1.2rem; display: none; }
+        .error { color: #ff6b6b; padding: 20px; background: #fff0f0; border-radius: 10px; margin: 20px 0; display: none; }
+        .success { color: #10b981; padding: 20px; background: #d1fae5; border-radius: 10px; margin: 20px 0; display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔄 N8N Marketing Dashboard</h1>
-            <p>Panel de gestión de workflows de automatización de marketing</p>
+            <h1>🔄 N8N Marketing Dashboard - SoftvibesLab</h1>
+            <p>Panel de gestión de workflows de automatización de marketing (Conexión Real)</p>
         </div>
         
-        <div class="grid">
+        <div id="loading" class="loading">
+            <div class="stat-value">🔄 Cargando métricas...</div>
+        </div>
+        
+        <div id="error" class="error"></div>
+        
+        <div class="grid" id="metrics">
             <div class="card">
                 <h2>📊 Workflows Activos</h2>
-                <div class="stat-value" id="active-workflows">3</div>
+                <div class="stat-value" id="active-workflows">0</div>
                 <div class="stat-label">Workflows corriendo</div>
             </div>
             <div class="card">
                 <h2>⚡ Ejecuciones Hoy</h2>
-                <div class="stat-value" id="executions-today">127</div>
+                <div class="stat-value" id="executions-today">0</div>
                 <div class="stat-label">Workflows ejecutados</div>
             </div>
             <div class="card">
-                <h2>✅ Workflows Exitosos</h2>
-                <div class="stat-value" id="success-workflows">98%</div>
-                <div class="stat-label">Tasa de éxito</div>
+                <h2>✅ Tasa de Éxito</h2>
+                <div class="stat-value" id="success-rate">0%</div>
+                <div class="stat-label">Porcentaje de éxito</div>
             </div>
             <div class="card">
                 <h2>⏱️ Tiempo Promedio</h2>
-                <div class="stat-value" id="avg-time">2.3s</div>
+                <div class="stat-value" id="avg-time">0s</div>
                 <div class="stat-label">Por ejecución</div>
             </div>
         </div>
         
         <div class="workflow-list">
             <h2>📋 Workflows Disponibles</h2>
-            
-            <div class="workflow-item">
-                <div>
-                    <div class="workflow-name">📧 Monitoreo de Emails</div>
-                    <div>
-                        <span class="status status-active">Activo</span>
-                        <small style="color: #666;">Última ejecución: hace 2min</small>
-                    </div>
-                </div>
-                <div class="workflow-actions">
-                    <button onclick="alert('Workflow ejecutado manualmente')">▶️ Ejecutar</button>
-                    <button onclick="alert('Abriendo editor...')">✏️ Editar</button>
-                </div>
-            </div>
-            
-            <div class="workflow-item">
-                <div>
-                    <div class="workflow-name">📄 Resumen Diario</div>
-                    <div>
-                        <span class="status status-active">Activo</span>
-                        <small style="color: #666;">Última ejecución: hace 4min</small>
-                    </div>
-                </div>
-                <div class="workflow-actions">
-                    <button onclick="alert('Workflow ejecutado manualmente')">▶️ Ejecutar</button>
-                    <button onclick="alert('Abriendo editor...')">✏️ Editar</button>
-                </div>
-            </div>
-            
-            <div class="workflow-item">
-                <div>
-                    <div class="workflow-name">📢 Procesar Campañas</div>
-                    <div>
-                        <span class="status status-inactive">Inactivo</span>
-                        <small style="color: #666;">Última ejecución: hace 1hora</small>
-                    </div>
-                </div>
-                <div class="workflow-actions">
-                    <button onclick="alert('Workflow ejecutado manualmente')">▶️ Ejecutar</button>
-                    <button onclick="alert('Abriendo editor...')">✏️ Editar</button>
-                </div>
-            </div>
-            
-            <div class="workflow-item">
-                <div>
-                    <div class="workflow-name">🎯 Método Definitivo - Contenido</div>
-                    <div>
-                        <span class="status status-active">Activo</span>
-                        <small style="color: #666;">Última ejecución: hace 30seg</small>
-                    </div>
-                </div>
-                <div class="workflow-actions">
-                    <button onclick="alert('Workflow ejecutado manualmente')">▶️ Ejecutar</button>
-                    <button onclick="alert('Abriendo editor...')">✏️ Editar</button>
-                </div>
-            </div>
-            
-            <div class="workflow-item">
-                <div>
-                    <div class="workflow-name">💰 Procesar Pagos</div>
-                    <div>
-                        <span class="status status-active">Activo</span>
-                        <small style="color: #666;">Última ejecución: hace 15min</small>
-                    </div>
-                </div>
-                <div class="workflow-actions">
-                    <button onclick="alert('Workflow ejecutado manualmente')">▶️ Ejecutar</button>
-                    <button onclick="alert('Abriendo editor...')">✏️ Editar</button>
-                </div>
-            </div>
+            <div id="workflows-container"></div>
         </div>
         
         <div class="grid">
             <div class="card">
                 <h2>🚀 Acciones Rápidas</h2>
-                <button class="btn" onclick="alert('Recargando datos...')">🔄 Recargar Datos</button>
+                <button class="btn" onclick="location.reload()">🔄 Recargar Dashboard</button>
                 <button class="btn" style="margin-top: 10px;" onclick="window.open('http://localhost:5678/', '_blank')">📱 Abrir N8N</button>
             </div>
             <div class="card">
-                <h2>📊 Métricas Recientes</h2>
+                <h2>📊 Conexión</h2>
                 <div style="margin: 20px 0;">
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
-                        <small style="color: #666;">Emails procesados hoy</small>
-                        <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">142</div>
-                    </div>
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
-                        <small style="color: #666;">Notificaciones enviadas</small>
-                        <div style="font-size: 1.5rem; font-weight: bold; color: #764ba2;">9</div>
-                    </div>
+                    <p><strong>URL N8N:</strong> <span id="n8n-url">http://31.97.145.53:5678</span></p>
+                    <p><strong>Estado:</strong> <span id="connection-status" class="status-badge">🔍 Verificando...</span></p>
                 </div>
             </div>
         </div>
     </div>
     
     <script>
-        // Función para actualizar estadísticas
-        async function fetchStats() {
+        // Configuración
+        const N8N_URL = 'http://31.97.145.53:5678';
+        const N8N_API = N8N_URL + '/rest';
+        
+        // Función para obtener workflows
+        async function fetchWorkflows() {
             try {
-                // Aquí se conectaría a la API de n8n
-                // Por ahora, datos simulados
-                const stats = {
-                    activeWorkflows: 3,
-                    executionsToday: 127,
-                    successRate: 98,
-                    avgTime: 2.3
-                };
-                
-                // Actualizar DOM
-                document.getElementById('active-workflows').textContent = stats.activeWorkflows;
-                document.getElementById('executions-today').textContent = stats.executionsToday;
-                document.getElementById('success-workflows').textContent = stats.successRate + '%';
-                document.getElementById('avg-time').textContent = stats.avgTime + 's';
+                const response = await fetch(N8N_API + '/workflows');
+                if (!response.ok) throw new Error('Error al conectar con n8n');
+                const data = await response.json();
+                return data.data || [];
             } catch (error) {
-                console.error('Error fetching stats:', error);
+                console.error('Error:', error);
+                showError('No se pudo conectar con n8n. Verifica que el puerto 5678 esté accesible.');
+                return [];
             }
         }
         
+        // Función para obtener estadísticas
+        async function fetchStats() {
+            try {
+                const response = await fetch(N8N_API + '/stats');
+                if (!response.ok) throw new Error('Error al obtener estadísticas');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error:', error);
+                return { executions: { today: 0 }, successRate: 0, avgTime: 0 };
+            }
+        }
+        
+        // Función para mostrar error
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+        }
+        
+        // Función para actualizar conexión
+        async function checkConnection() {
+            const statusBadge = document.getElementById('connection-status');
+            try {
+                await fetch(N8N_API + '/workflows');
+                statusBadge.textContent = '✅ Conectado';
+                statusBadge.className = 'status-badge status-active';
+            } catch (error) {
+                statusBadge.textContent = '❌ Desconectado';
+                statusBadge.className = 'status-badge status-inactive';
+            }
+        }
+        
+        // Función principal
+        async function init() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('metrics').style.display = 'none';
+            document.getElementById('workflows-container').innerHTML = '';
+            
+            const workflows = await fetchWorkflows();
+            const stats = await fetchStats();
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('metrics').style.display = 'grid';
+            
+            // Actualizar métricas
+            const activeWorkflows = workflows.filter(w => w.active).length;
+            document.getElementById('active-workflows').textContent = activeWorkflows;
+            document.getElementById('executions-today').textContent = stats.executions?.today || 0;
+            document.getElementById('success-rate').textContent = (stats.successRate || 0) + '%';
+            document.getElementById('avg-time').textContent = (stats.avgTime || 0) + 's';
+            
+            // Actualizar lista de workflows
+            const container = document.getElementById('workflows-container');
+            if (workflows.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No se encontraron workflows</p>';
+            } else {
+                workflows.forEach(workflow => {
+                    const isActive = workflow.active;
+                    const statusClass = isActive ? 'status-active' : 'status-inactive';
+                    const statusText = isActive ? 'Activo' : 'Inactivo';
+                    
+                    const item = document.createElement('div');
+                    item.className = 'workflow-item';
+                    item.innerHTML = `
+                        <div class="workflow-name">📄 ${workflow.name}</div>
+                        <div>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                            <small style="color: #666; margin-left: 15px;">ID: ${workflow.id.substring(0, 8)}...</small>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+            
+            // Verificar conexión
+            await checkConnection();
+        }
+        
+        // Inicializar
+        window.addEventListener('load', init);
+        
         // Actualizar cada 30 segundos
-        fetchStats();
-        setInterval(fetchStats, 30000);
+        setInterval(init, 30000);
     </script>
 </body>
 </html>
